@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Content\ContratType.docx" />
+    <None Remove="ContratType.docx" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Content\ContratType.docx" />
+    <Resource Include="ContratType.docx" />
   </ItemGroup>
 
   <ItemGroup>
