@@ -1,0 +1,32 @@
+﻿@page "/personnes"
+
+@if (personnes == null)
+{
+    <p>Chargement des personnes ...</p>
+}
+else
+{
+    if (personnes.Any())
+    {
+        <table class="table table-sm table-striped">
+            <tbody>
+                @foreach (var personne in personnes)
+                {
+                    <tr>
+                        <td>@personne.ToString()</td>
+                        <td>
+                            <button class="btn btn-primary"
+                                @onclick="() => AfficherDetails(personne)">
+                                Détails
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Aucun contrats trouvés !</p>
+    }
+}

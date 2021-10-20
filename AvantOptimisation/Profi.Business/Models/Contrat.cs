@@ -3,12 +3,13 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Profi.Business.Data.Models
+namespace Profi.Business.Models
 {
     public class Contrat
     {
@@ -19,7 +20,7 @@ namespace Profi.Business.Data.Models
         public string? Reduction { get; set; }
         public string? DocumentBase64 { get; set; }
 
-        public virtual Personne TitulaireNavigation { get; set; } = default!;
+        public Personne TitulaireNavigation { get; set; } = default!;
 
         /// <summary>
         /// Méthode simulant une requête complexe
@@ -54,7 +55,7 @@ namespace Profi.Business.Data.Models
         {
             List<Contrat> result = new List<Contrat>();
             SqlConnection conn = new SqlConnection(Consts.ConnectionString);
-            string request = "SELECT uid uid, titulaire titulaire, montant montant, debut debut, reduction reduction FROM CONTRAT";
+            string request = "SELECT uid, titulaire, montant, debut, reduction FROM CONTRAT";
             if (!string.IsNullOrEmpty(restrictionUIDPersonne))
             {
                 request += " WHERE titulaire=@titulaire";
@@ -84,7 +85,7 @@ namespace Profi.Business.Data.Models
         public static Contrat Recuperer(string UIDContrat)
         {
             SqlConnection con = new SqlConnection(Consts.ConnectionString);
-            SqlCommand command = new SqlCommand("SELECT uid uid, titulaire titulaire, montant montant, debut debut, reduction reduction FROM CONTRAT WHERE uid=@uidcontrat", con);
+            SqlCommand command = new SqlCommand("SELECT uid, titulaire, montant, debut, reduction FROM CONTRAT WHERE uid=@uidcontrat", con);
             command.Parameters.Add(new SqlParameter("uidcontrat", UIDContrat));
             con.Open();
             Contrat result = null;
@@ -141,7 +142,7 @@ namespace Profi.Business.Data.Models
             string tempRep = Path.GetTempFileName();
             File.Delete(tempRep);
             Directory.CreateDirectory(tempRep);
-            using (Stream Flux = typeof(Contrat).Assembly.GetManifestResourceStream("Profi.Business.ContratType.docx"))
+            using (Stream Flux = new MemoryStream(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "ContratType.docx"))))
             {
                 new FastZip().ExtractZip(Flux, tempRep, FastZip.Overwrite.Always, null, ".*", ".*", false, true);
             }

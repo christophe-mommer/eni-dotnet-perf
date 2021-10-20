@@ -1,26 +1,17 @@
 ﻿using Microsoft.Data.SqlClient;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Profi.Business.Data.Models
+namespace Profi.Business.Models
 {
     public class Personne
     {
-        public Personne()
-        {
-            Contrats = new HashSet<Contrat>();
-        }
-
         public string Uid { get; set; } = "";
         public string Nom { get; set; } = "";
         public string Prenom { get; set; } = "";
         public string Description { get; set; } = "";
 
-        public virtual ICollection<Contrat> Contrats { get; set; }
+        public List<Contrat> Contrats { get; set; } = new List<Contrat>();
 
         /// <summary>
         /// Méthode de récupération de la liste des personnes depuis la base de données
@@ -30,7 +21,7 @@ namespace Profi.Business.Data.Models
         {
             List<Personne> resultat = new List<Personne>();
             SqlConnection conn = new SqlConnection(Consts.ConnectionString);
-            SqlCommand command = new SqlCommand("SELECT uid uid, nom nom, prenom prenom, description description FROM PERSONNE", conn);
+            SqlCommand command = new SqlCommand("SELECT uid, nom, prenom, description FROM PERSONNE", conn);
             conn.Open();
             using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection))
             {
@@ -51,7 +42,7 @@ namespace Profi.Business.Data.Models
         public static Personne Recuperer(string UIDPersonne)
         {
             SqlConnection conn = new SqlConnection(Consts.ConnectionString);
-            SqlCommand command = new SqlCommand("SELECT uid uid, nom nom, prenom prenom, description description FROM PERSONNE WHERE uid=@uidpersonne", conn);
+            SqlCommand command = new SqlCommand("SELECT uid, nom, prenom, description FROM PERSONNE WHERE uid=@uidpersonne", conn);
             command.Parameters.Add(new SqlParameter("uidpersonne", UIDPersonne));
             conn.Open();
             Personne resultat = null;
@@ -66,7 +57,7 @@ namespace Profi.Business.Data.Models
             // Si on a trouvé la personne, on rajoute ses contrats
             if (resultat != null)
             {
-                command = new SqlCommand("SELECT uid uid FROM CONTRAT WHERE titulaire=@uidpersonne", conn);
+                command = new SqlCommand("SELECT uid FROM CONTRAT WHERE titulaire=@uidpersonne", conn);
                 command.Parameters.Add(new SqlParameter("uidpersonne", UIDPersonne));
                 conn.Open();
                 using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection))

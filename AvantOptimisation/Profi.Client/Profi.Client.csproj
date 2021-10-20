@@ -2,17 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0-preview.6.21355.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0-preview.6.21355.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0-rc.2.21480.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0-rc.2.21480.10" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Profi.Business\Profi.Business.csproj" />
-    <ProjectReference Include="..\Profi.Controls\Profi.Controls.csproj" />
-    <ProjectReference Include="..\Profi.Infra\Profi.Infra.csproj" />
+    <ProjectReference Include="..\Profi.Controls.Contrats\Profi.Controls.Contrats.csproj" />
+    <ProjectReference Include="..\Profi.Controls.Personnes\Profi.Controls.Personnes.csproj" />
   </ItemGroup>
 
 </Project>

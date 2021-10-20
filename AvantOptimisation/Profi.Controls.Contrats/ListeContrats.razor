@@ -1,0 +1,44 @@
+﻿@page "/contrats/{personneId}"
+@if (string.IsNullOrWhiteSpace(PersonneId))
+{
+    <h1>Aucune persone demandée</h1>
+}
+else
+{
+    @if (contrats == null)
+    {
+        <p>Chargement des contrats ...</p>
+    }
+    else
+    {
+        <div class="row">
+            <button class="btn btn-warning"
+            @onclick="@(() => Navigation.NavigateTo($"/personne/{PersonneId}"))">
+                Retour à la fiche personne
+            </button>
+        </div>
+        if (contrats.Any())
+        {
+            <table class="table table-sm table-striped">
+                <tbody>
+                    @foreach (var contrat in contrats)
+                    {
+                        <tr>
+                            <td>@contrat.ToString()</td>
+                            <td>
+                                <button class="btn btn-primary"
+                        @onclick="() => AfficherDetails(contrat)">
+                                    Détails
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>Aucun contrats trouvés !</p>
+        }
+    }
+}
