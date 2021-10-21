@@ -12,10 +12,12 @@ else
     else
     {
         <div class="row">
-            <button class="btn btn-warning"
-            @onclick="@(() => Navigation.NavigateTo($"/personne/{PersonneId}"))">
-                Retour à la fiche personne
-            </button>
+            <div class="col">
+                <button class="btn btn-warning"
+                @onclick="@(() => Navigation.NavigateTo($"/personne/{PersonneId}"))">
+                    Retour à la fiche personne
+                </button>
+            </div>
         </div>
         if (contrats.Any())
         {

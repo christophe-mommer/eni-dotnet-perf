@@ -7,21 +7,22 @@
 else
 {
     <div class="row">
-        <button class="btn btn-warning" @onclick="@(() => Navigation.NavigateTo($"/contrats/{Uid}"))">Retour à la liste</button>
+        <div class="col">
+            <button class="btn btn-warning" @onclick="@(() => Navigation.NavigateTo($"/contrats/{Uid}"))">Retour à la liste</button>
+        </div>
     </div>
-    <EditForm Model="@contrat" OnValidSubmit="SaveContrat">
+    <EditForm Model="@contrat">
         <div class="mb-3">
             <label for="date_contrat" class="form-label">Date</label>
-            <InputDate class="form-control" id="date_contrat" @bind-Value="contrat.Debut"  />
+            <InputDate class="form-control" id="date_contrat" @bind-Value="contrat.Debut" readonly="true" />
         </div>
         <div class="mb-3">
             <label for="montant_contrat" class="form-label">Montant</label>
-            <InputNumber class="form-control" id="montant_contrat" @bind-Value="contrat.Montant" />
+            <InputNumber class="form-control" id="montant_contrat" @bind-Value="contrat.Montant" readonly="true" />
         </div>
         <div class="mb-3">
             <label for="code_reduc_contrat" class="form-label">Code de réduction</label>
-            <InputText class="form-control" id="code_reduc_contrat" @bind-Value="contrat.Reduction" />
+            <InputText class="form-control" id="code_reduc_contrat" @bind-Value="contrat.Reduction" readonly="true" />
         </div>
-        <button type="submit" class="btn btn-primary">Sauvegarde</button>
     </EditForm>
 }

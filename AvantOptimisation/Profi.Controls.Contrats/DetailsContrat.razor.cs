@@ -30,10 +30,5 @@ namespace Profi.Controls.Contrats
                 contrat = JsonSerializer.Deserialize<Contrat>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
         }
-
-        private async Task SaveContrat()
-        {
-
-        }
     }
 }

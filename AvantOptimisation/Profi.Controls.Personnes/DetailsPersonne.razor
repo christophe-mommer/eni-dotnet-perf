@@ -7,22 +7,23 @@
 else
 {
     <div class="row">
-        <button class="btn btn-warning" @onclick="@(() => Navigation.NavigateTo("/personnes"))">Retour à la liste</button>
+        <div class="col">
+            <button class="btn btn-warning" @onclick="@(() => Navigation.NavigateTo("/personnes"))">Retour à la liste</button>
+        </div>
     </div>
-    <EditForm Model="@personne" OnValidSubmit="SavePersonne">
+    <EditForm Model="@personne">
         <div class="mb-3">
             <label for="nom_personne" class="form-label">Nom</label>
-            <InputText class="form-control" id="nom_personne" @bind-Value="personne.Nom" />
+            <InputText class="form-control" id="nom_personne" @bind-Value="personne.Nom" readonly="true" />
         </div>
         <div class="mb-3">
             <label for="prenom_personne" class="form-label">Prénom</label>
-            <InputText class="form-control" id="montant_contrat" @bind-Value="personne.Prenom" />
+            <InputText class="form-control" id="montant_contrat" @bind-Value="personne.Prenom" readonly="true" />
         </div>
         <div class="mb-3">
             <label for="description_personne" class="form-label">Description</label>
-            <InputText class="form-control" id="description_personne" @bind-Value="personne.Description" />
+            <InputText class="form-control" id="description_personne" @bind-Value="personne.Description" readonly="true" />
         </div>
-        <div class="m-3"><button type="submit" class="btn btn-primary">Sauvegarde</button></div>
     </EditForm>
     <div class="row">
         <div class="col">

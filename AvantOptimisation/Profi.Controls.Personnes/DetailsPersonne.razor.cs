@@ -25,10 +25,5 @@ namespace Profi.Controls.Personnes
             var data = await client.GetStringAsync(new Uri(new Uri(Configuration["Api:BaseUrl"], UriKind.Absolute), $"api/personnes/{Uid}"));
             personne = JsonSerializer.Deserialize<Personne>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
-
-        private async Task SavePersonne()
-        {
-
-        }
     }
 }
