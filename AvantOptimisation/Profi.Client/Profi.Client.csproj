@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Profi.Controls.Contrats\Profi.Controls.Contrats.csproj" />
     <ProjectReference Include="..\Profi.Controls.Personnes\Profi.Controls.Personnes.csproj" />
+    <ProjectReference Include="..\Profi.Dtos\Profi.Dtos.csproj" />
   </ItemGroup>
 
 </Project>

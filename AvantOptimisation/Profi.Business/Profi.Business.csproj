@@ -18,4 +18,12 @@
 	  </None>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Messages\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Profi.Infra\Profi.Infra.csproj" />
+	</ItemGroup>
+
 </Project>

@@ -12,7 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Profi.Business\Profi.Business.csproj" />
-    <ProjectReference Include="..\Profi.Models\Profi.Models.csproj" />
+    <ProjectReference Include="..\Profi.Dtos\Profi.Dtos.csproj" />
+    <ProjectReference Include="..\Profi.Infra\Profi.Infra.csproj" />
   </ItemGroup>
 
 </Project>

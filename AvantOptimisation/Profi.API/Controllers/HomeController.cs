@@ -1,17 +1,16 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Profi.Models;
+using Profi.Dtos;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace Profi.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class HomeController : ControllerBase
     {
-        [HttpPost]
-        public async Task<IActionResult> Authentification(LoginModel model)
+        [HttpPost("login")]
+        public async Task<IActionResult> Authentification(LoginDto model)
         {
             // Implémentation exemple de la fonction : le mot de passe est tout simplement le login inversé
             // Login = admin, mdp = nimda

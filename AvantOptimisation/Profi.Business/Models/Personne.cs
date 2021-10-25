@@ -1,10 +1,15 @@
 ﻿using Microsoft.Data.SqlClient;
+using Profi.Infra;
+using Profi.Infra.Messages.Personnes;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace Profi.Business.Models
 {
-    public class Personne
+    public class Personne :
+        IHandler<RecupererPersonne>,
+        IHandler<RecupererPersonnes>
     {
         public string Uid { get; set; } = "";
         public string Nom { get; set; } = "";
@@ -17,7 +22,7 @@ namespace Profi.Business.Models
         /// Méthode de récupération de la liste des personnes depuis la base de données
         /// </summary>
         /// <returns>Une liste de personnes</returns>
-        public static List<Personne> RecupererListe()
+        private static List<Personne> RecupererListe()
         {
             List<Personne> resultat = new List<Personne>();
             SqlConnection conn = new SqlConnection(Consts.ConnectionString);
@@ -39,7 +44,7 @@ namespace Profi.Business.Models
         /// </summary>
         /// <param name="UIDPersonne">Identifiant de la personne à charger</param>
         /// <returns>Un objet métier de type personne correspondant, ou null si l'identifiant ne correspondait pas à une entrée dans la base de données</returns>
-        public static Personne Recuperer(string UIDPersonne)
+        private static Personne Recuperer(string UIDPersonne)
         {
             SqlConnection conn = new SqlConnection(Consts.ConnectionString);
             SqlCommand command = new SqlCommand("SELECT uid, nom, prenom, description FROM PERSONNE WHERE uid=@uidpersonne", conn);
@@ -86,6 +91,18 @@ namespace Profi.Business.Models
                 Prenom = Lecteur.GetString(Lecteur.GetOrdinal("prenom")),
                 Description = Lecteur.GetString(Lecteur.GetOrdinal("description"))
             };
+        }
+
+        public Task<object> HandleMessage(RecupererPersonnes message)
+        {
+            object result = RecupererListe();
+            return Task.FromResult(result);
+        }
+
+        public Task<object> HandleMessage(RecupererPersonne message)
+        {
+            object result = Recuperer(message.Id);
+            return Task.FromResult(result);
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Profi.Business.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Profi.Infra;
+using Profi.Infra.Messages.Contrats;
 
 namespace Profi.API.Controllers
 {
@@ -19,13 +19,15 @@ namespace Profi.API.Controllers
         [HttpGet("{personneId}")]
         public async Task<IActionResult> Get(string personneId)
         {
-            return Ok(Contrat.RecupererListe(personneId));
+            var result = await Bus.Current.DispatchMessage(new RecupererListeParPersonne(personneId));
+            return Ok(result);
         }
 
         [HttpGet("byId/{contratId}")]
         public async Task<IActionResult> GetContrat(string contratId)
         {
-            return Ok(Contrat.Recuperer(contratId));
+            var result = await Bus.Current.DispatchMessage(new RecupererContrat(contratId));
+            return Ok(result);
         }
 
         [HttpPost]
@@ -39,7 +41,8 @@ namespace Profi.API.Controllers
         [HttpGet("complexe")]
         public async Task<IActionResult> Complexe()
         {
-            return Ok(Contrat.RequeteComplexe());
+            var result = await Bus.Current.DispatchMessage(new ExecuterRequeteComplexe());
+            return Ok(result);
         }
     }
 }

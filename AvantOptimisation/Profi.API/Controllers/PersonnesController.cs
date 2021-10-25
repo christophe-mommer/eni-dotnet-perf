@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Profi.Business.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Profi.Infra;
+using Profi.Infra.Messages.Personnes;
 
 namespace Profi.API.Controllers
 {
@@ -11,13 +11,15 @@ namespace Profi.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok(Personne.RecupererListe());
+            var result = await Bus.Current.DispatchMessage(new RecupererPersonnes());
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
-            return Ok(Personne.Recuperer(id));
+            var result = await Bus.Current.DispatchMessage(new RecupererPersonne(id));
+            return Ok(result);
         }
     }
 }

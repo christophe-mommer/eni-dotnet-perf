@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Profi.Models
+namespace Profi.Dtos
 {
-    public class LoginModel
+    public class LoginDto
     {
         [Required] public string? Login { get; set; }
         [Required] public string? Password { get; set; }

@@ -1,5 +1,7 @@
 ﻿using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Data.SqlClient;
+using Profi.Infra;
+using Profi.Infra.Messages.Contrats;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,7 +13,10 @@ using System.Xml;
 
 namespace Profi.Business.Models
 {
-    public class Contrat
+    public class Contrat :
+        IHandler<ExecuterRequeteComplexe>,
+        IHandler<RecupererContrat>,
+        IHandler<RecupererListeParPersonne>
     {
         public string Uid { get; set; } = "";
         public string UidTitulaire { get; set; } = "";
@@ -26,7 +31,7 @@ namespace Profi.Business.Models
         /// Méthode simulant une requête complexe
         /// </summary>
         /// <returns>Une liste de chaînes en retour</returns>
-        public static List<string> RequeteComplexe()
+        private static List<string> RequeteComplexe()
         {
             List<string> result = new List<string>();
             SqlConnection conn = new SqlConnection(Consts.ConnectionString);
@@ -51,7 +56,7 @@ namespace Profi.Business.Models
         /// <param name="restrictionUIDPersonne">Code de restriction éventuel de la liste sur un identifiant d'une personne titulaire des contrats
         /// qui seront alors renvoyés par la méthode. Si le paramètre est null, on enverra tous les contrats de la base de données.</param>
         /// <returns>Une liste de contrats</returns>
-        public static List<Contrat> RecupererListe(string restrictionUIDPersonne)
+        private static List<Contrat> RecupererListe(string restrictionUIDPersonne)
         {
             List<Contrat> result = new List<Contrat>();
             SqlConnection conn = new SqlConnection(Consts.ConnectionString);
@@ -82,7 +87,7 @@ namespace Profi.Business.Models
         /// </summary>
         /// <param name="UIDContrat">Identifiant du contrat à charger</param>
         /// <returns>Un objet métier de type contrat correspondant, ou null si l'identifiant ne correspondait pas à une entrée dans la base de données</returns>
-        public static Contrat Recuperer(string UIDContrat)
+        internal static Contrat Recuperer(string UIDContrat)
         {
             SqlConnection con = new SqlConnection(Consts.ConnectionString);
             SqlCommand command = new SqlCommand("SELECT uid, titulaire, montant, debut, reduction FROM CONTRAT WHERE uid=@uidcontrat", con);
@@ -177,6 +182,24 @@ namespace Profi.Business.Models
             string fichierFusion = Path.GetTempFileName();
             new FastZip().CreateZip(fichierFusion, RepTemp, true, ".*");
             return fichierFusion;
+        }
+
+        public Task<object> HandleMessage(ExecuterRequeteComplexe message)
+        {
+            object result = RequeteComplexe();
+            return Task.FromResult(result);
+        }
+
+        public Task<object> HandleMessage(RecupererListeParPersonne message)
+        {
+            object result = RecupererListe(message.PersonneId);
+            return Task.FromResult(result);
+        }
+
+        public Task<object> HandleMessage(RecupererContrat message)
+        {
+            object result = Recuperer(message.Id);
+            return Task.FromResult(result);
         }
     }
 }
