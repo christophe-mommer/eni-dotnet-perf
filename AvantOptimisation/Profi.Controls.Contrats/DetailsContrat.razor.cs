@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Configuration;
+using Microsoft.JSInterop;
 using Profi.Business.Models;
+using System.Text.Json;
 
 namespace Profi.Controls.Contrats
 {
@@ -15,6 +10,7 @@ namespace Profi.Controls.Contrats
     {
         [Inject] private IConfiguration Configuration { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
+        [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
         [Parameter] public string? Uid { get; set; }
 

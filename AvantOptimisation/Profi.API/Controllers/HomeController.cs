@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Profi.Dtos;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Profi.API.Controllers
 {
@@ -15,9 +12,19 @@ namespace Profi.API.Controllers
             // Implémentation exemple de la fonction : le mot de passe est tout simplement le login inversé
             // Login = admin, mdp = nimda
             string mdp = new string(model.Login.ToCharArray().Reverse().ToArray());
-            SHA256 sha = SHA256.Create();
-            byte[] hash = sha.ComputeHash(Encoding.UTF8.GetBytes(mdp));
-            if(string.Compare(mdp, Convert.ToBase64String(hash)) == 0)
+            bool equals = true;
+            for (int i = 0; i < mdp.Length; i++)
+            {
+                try
+                {
+                    if (mdp[i] != model.Password[i])
+                    {
+                        equals = false;
+                    }
+                }
+                catch { equals = false; }
+            }
+            if (equals)
             {
                 return Ok();
             }

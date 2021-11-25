@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Profi.Infra.Messages.Personnes
+﻿namespace Profi.Infra.Messages.Personnes
 {
     public class RecupererPersonnes : IMessage
     {

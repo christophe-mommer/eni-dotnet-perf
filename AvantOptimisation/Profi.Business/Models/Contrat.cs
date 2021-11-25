@@ -2,13 +2,7 @@
 using Microsoft.Data.SqlClient;
 using Profi.Infra;
 using Profi.Infra.Messages.Contrats;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Profi.Business.Models
@@ -16,7 +10,8 @@ namespace Profi.Business.Models
     public class Contrat :
         IHandler<ExecuterRequeteComplexe>,
         IHandler<RecupererContrat>,
-        IHandler<RecupererListeParPersonne>
+        IHandler<RecupererListeParPersonne>,
+        IHandler<FusionnerContrat>
     {
         public string Uid { get; set; } = "";
         public string UidTitulaire { get; set; } = "";
@@ -125,15 +120,6 @@ namespace Profi.Business.Models
                 result.Reduction = Lecteur.GetString(Lecteur.GetOrdinal("reduction"));
             }
 
-            // Réalisation d'une fusion de document pour mise à disposition dans l'objet métier du fichier Word contractuel
-            string tempRep = ExtraireContratTypeDansRepertoire();
-
-            string fichierFusion = FusionnerDocumentContrat(result, tempRep);
-            result.DocumentBase64 = Convert.ToBase64String(File.ReadAllBytes(fichierFusion));
-
-            File.Delete(fichierFusion);
-            Directory.Delete(tempRep, true);
-
             return result;
         }
 
@@ -147,7 +133,8 @@ namespace Profi.Business.Models
             string tempRep = Path.GetTempFileName();
             File.Delete(tempRep);
             Directory.CreateDirectory(tempRep);
-            using (Stream Flux = new MemoryStream(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "ContratType.docx"))))
+            var fileBytes = File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "ContratType.docx"));
+            using (Stream Flux = new MemoryStream(fileBytes))
             {
                 new FastZip().ExtractZip(Flux, tempRep, FastZip.Overwrite.Always, null, ".*", ".*", false, true);
             }
@@ -170,11 +157,11 @@ namespace Profi.Business.Models
 
             XmlNamespaceManager @namespace = new XmlNamespaceManager(xml.NameTable);
             @namespace.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
-            foreach (XmlNode node in xml.SelectNodes("//w:t[contains(., '[FUSION_')]", @namespace))
+            foreach (XmlNode node in xml.SelectNodes("//w:t[contains(., 'FUSION_')]", @namespace))
             {
-                node.InnerText = node.InnerText.Replace("[FUSION_uid]", Resultat.Uid);
-                node.InnerText = node.InnerText.Replace("[FUSION_montant]", Resultat.Montant.ToString("C"));
-                node.InnerText = node.InnerText.Replace("[FUSION_debut]", Resultat.Debut.ToLongDateString());
+                node.InnerText = node.InnerText.Replace("FUSION_uid", Resultat.Uid);
+                node.InnerText = node.InnerText.Replace("FUSION_montant", Resultat.Montant.ToString("C"));
+                node.InnerText = node.InnerText.Replace("FUSION_debut", Resultat.Debut.ToLongDateString());
             }
 
             xml.Save(docFile);
@@ -199,6 +186,14 @@ namespace Profi.Business.Models
         public Task<object> HandleMessage(RecupererContrat message)
         {
             object result = Recuperer(message.Id);
+            return Task.FromResult(result);
+        }
+
+        public Task<object> HandleMessage(FusionnerContrat message)
+        {
+            var contrat = Recuperer(message.Id);
+            var dir = ExtraireContratTypeDansRepertoire();
+            object result = FusionnerDocumentContrat(contrat, dir);
             return Task.FromResult(result);
         }
     }

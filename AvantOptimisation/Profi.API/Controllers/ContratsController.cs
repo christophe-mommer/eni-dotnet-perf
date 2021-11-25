@@ -30,6 +30,17 @@ namespace Profi.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("download/{contratId}")]
+        public async Task<IActionResult> GetFichierContrat(string contratId)
+        {
+            var result = await Bus.Current.DispatchMessage(new FusionnerContrat(contratId));
+            if (result is string filePath && System.IO.File.Exists(filePath))
+            {
+                return File(await System.IO.File.ReadAllBytesAsync(filePath), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "contrat.docx");
+            }
+            return NotFound();
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post(string content)
         {

@@ -4,14 +4,21 @@
 
 <h1>Application de test PROFI</h1>
 
+@if (isError.GetValueOrDefault())
+{
+    <div class="alert alert-danger" role="alert">
+        Login et/ou mdp incorrect
+    </div>
+}
 <EditForm Model="login" OnValidSubmit="Login">
-        <div class="mb-3">
-            <label for="login" class="form-label">Login</label>
-            <InputText class="form-control" id="login" @bind-Value="login.Login" />
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <InputText typeof="password" class="form-control" id="password" @bind-Value="login.Password" />
-        </div>
+    <div class="mb-3">
+        <label for="login" class="form-label">Login</label>
+        <InputText class="form-control" id="login" @bind-Value="login.Login" />
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <InputText typeof="password" class="form-control" id="password" @bind-Value="login.Password" />
+    </div>
+    <button type="submit" class="btn btn-primary">Se connecter</button>
 </EditForm>
 

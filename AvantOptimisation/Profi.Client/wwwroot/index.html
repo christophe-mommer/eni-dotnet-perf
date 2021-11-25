@@ -20,6 +20,36 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script type="text/javascript">
+        function goBack() {
+            window.history.back();
+        }
+        function createCookie(name, value, days) {
+                let expires;
+                if (days) {
+                    let date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toGMTString();
+                }
+                else {
+                    expires = "";
+                }
+                document.cookie = name + "=" + value + expires + "; path=/";
+            }
+            function readCookie(name) {
+                if(document.cookie)
+                {
+                    const cookieParts = document.cookie.split(';');
+                    if(cookieParts){
+                        const namedCookie = cookieParts.find(c => c.trim().startsWith(name));
+                        if(namedCookie){
+                            return namedCookie.split('=')[1];
+                        }
+                    }
+                }
+                return '';
+            }
+    </script>
 </body>
 
 </html>

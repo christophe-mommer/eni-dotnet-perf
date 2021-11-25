@@ -1,41 +1,33 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using System.Net.Http;
-using System.Net.Http.Json;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.Web.Virtualization;
-using Microsoft.AspNetCore.Components.WebAssembly.Http;
-using Microsoft.JSInterop;
-using Profi.Client;
-using Profi.Client.Shared;
-using Profi.Controls.Contrats;
-using Profi.Controls.Personnes;
+using Profi.Client.Service;
 using Profi.Dtos;
+using System.Net.Http.Json;
 
 namespace Profi.Client.Pages
 {
     public partial class Index
     {
         [Inject] private IConfiguration Configuration { get; set; } = default!;
+        [Inject] private CookieService Cookie { get; set; } = default!;
+        [Inject] private NavigationManager Navigation { get; set; } = default!;
 
-        private LoginDto login = new();
+        private readonly LoginDto login = new();
+        private bool? isError;
+
 
         private async Task Login()
         {
+            isError = null;
             var client = new HttpClient();
             var data = await client.PostAsJsonAsync(new Uri(new Uri(Configuration["Api:BaseUrl"], UriKind.Absolute), "login"), login);
-            if(data.IsSuccessStatusCode)
+            if (data.IsSuccessStatusCode)
             {
-
+                await Cookie.CreateCookie("Authenticated", "true");
+                Navigation.NavigateTo("/personnes", true);
             }
             else
             {
-
+                isError = true;
             }
         }
     }

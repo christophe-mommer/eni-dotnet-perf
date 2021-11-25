@@ -8,7 +8,7 @@ else
 {
     <div class="row">
         <div class="col">
-            <button class="btn btn-warning" @onclick="@(() => Navigation.NavigateTo($"/contrats/{Uid}"))">Retour à la liste</button>
+            <button class="btn btn-warning" onclick="window.history.back()">Retour à la liste</button>
         </div>
     </div>
     <EditForm Model="@contrat">
@@ -25,4 +25,10 @@ else
             <InputText class="form-control" id="code_reduc_contrat" @bind-Value="contrat.Reduction" readonly="true" />
         </div>
     </EditForm>
+    <div class="row">
+        <div class="col">
+            <a class="btn btn-warning" href="@(new Uri(new Uri(Configuration["Api:BaseUrl"], UriKind.Absolute), $"api/contrats/download/{Uid}").ToString())">Éditer le contrat</a>
+        </div>
+
+    </div>
 }
