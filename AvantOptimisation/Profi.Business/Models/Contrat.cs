@@ -34,12 +34,9 @@ namespace Profi.Business.Models
             conn.Open();
 
             SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
-            using (reader)
+            while (reader.Read())
             {
-                while (reader.Read())
-                {
-                    result.Add(reader.GetString(0));
-                }
+                result.Add(reader.GetString(0));
             }
 
             return result;
@@ -66,14 +63,11 @@ namespace Profi.Business.Models
                 != null)
                 command.Parameters.Add(new SqlParameter("titulaire", restrictionUIDPersonne));
             conn.Open();
-            using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection))
+            SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+            while (reader.Read())
             {
-                while (reader.Read())
-                {
-                    result.Add(RecupererContratSurCurseur(reader));
-                }
+                result.Add(RecupererContratSurCurseur(reader));
             }
-
             return result;
         }
 
@@ -89,35 +83,32 @@ namespace Profi.Business.Models
             command.Parameters.Add(new SqlParameter("uidcontrat", UIDContrat));
             con.Open();
             Contrat result = null;
-            using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection))
+            SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+            if (reader.Read())
             {
-                if (reader.Read())
-                {
-                    result = RecupererContratSurCurseur(reader);
-                }
+                result = RecupererContratSurCurseur(reader);
             }
-
             return result;
         }
 
         /// <summary>
         /// Fonction utilitaire de peuplement de l'objet métier contrat en fonction du curseur sur une table de données
         /// </summary>
-        /// <param name="Lecteur">Curseur de requête</param>
+        /// <param name="reader">Curseur de requête</param>
         /// <returns>Objet métier contrat créé à partir du curseur</returns>
-        private static Contrat RecupererContratSurCurseur(SqlDataReader Lecteur)
+        private static Contrat RecupererContratSurCurseur(SqlDataReader reader)
         {
             Contrat result = new Contrat()
             {
-                Uid = Lecteur.GetString(Lecteur.GetOrdinal("uid")),
-                UidTitulaire = Lecteur.GetString(Lecteur.GetOrdinal("titulaire")),
-                Montant = (int)Lecteur.GetDecimal(Lecteur.GetOrdinal("montant")),
-                Debut = Lecteur.GetDateTime(Lecteur.GetOrdinal("debut")),
+                Uid = reader.GetString(reader.GetOrdinal("uid")),
+                UidTitulaire = reader.GetString(reader.GetOrdinal("titulaire")),
+                Montant = (int)reader.GetDecimal(reader.GetOrdinal("montant")),
+                Debut = reader.GetDateTime(reader.GetOrdinal("debut")),
             };
 
-            if (!Lecteur.IsDBNull(Lecteur.GetOrdinal("reduction")))
+            if (!reader.IsDBNull(reader.GetOrdinal("reduction")))
             {
-                result.Reduction = Lecteur.GetString(Lecteur.GetOrdinal("reduction"));
+                result.Reduction = reader.GetString(reader.GetOrdinal("reduction"));
             }
 
             return result;

@@ -26,13 +26,13 @@ namespace Profi.Business.Models
             SqlConnection conn = new SqlConnection(Consts.ConnectionString);
             SqlCommand command = new SqlCommand("SELECT uid, nom, prenom, description FROM PERSONNE", conn);
             conn.Open();
-            using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection))
+            SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+            while (reader.Read())
             {
-                while (reader.Read())
-                {
-                    resultat.Add(RecupererPersonneSurCurseur(reader));
-                }
+                resultat.Add(RecupererPersonneSurCurseur(reader));
             }
+
 
             return resultat;
         }
@@ -49,12 +49,11 @@ namespace Profi.Business.Models
             command.Parameters.Add(new SqlParameter("uidpersonne", UIDPersonne));
             conn.Open();
             Personne resultat = null;
-            using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection))
+            SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection);
+
+            if (reader.Read())
             {
-                if (reader.Read())
-                {
-                    resultat = RecupererPersonneSurCurseur(reader);
-                }
+                resultat = RecupererPersonneSurCurseur(reader);
             }
 
             // Si on a trouvé la personne, on rajoute ses contrats
@@ -63,12 +62,10 @@ namespace Profi.Business.Models
                 command = new SqlCommand("SELECT uid FROM CONTRAT WHERE titulaire=@uidpersonne", conn);
                 command.Parameters.Add(new SqlParameter("uidpersonne", UIDPersonne));
                 conn.Open();
-                using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection))
+                SqlDataReader reader2 = command.ExecuteReader(CommandBehavior.CloseConnection);
+                while (reader2.Read())
                 {
-                    while (reader.Read())
-                    {
-                        resultat.Contrats.Add(Contrat.Recuperer(reader.GetString(reader.GetOrdinal("uid"))));
-                    }
+                    resultat.Contrats.Add(Contrat.Recuperer(reader.GetString(reader2.GetOrdinal("uid"))));
                 }
             }
 
@@ -78,16 +75,16 @@ namespace Profi.Business.Models
         /// <summary>
         /// Fonction utilitaire de peuplement de l'objet métier personne en fonction du curseur sur une table de données
         /// </summary>
-        /// <param name="Lecteur">Curseur de requête</param>
+        /// <param name="reader">Curseur de requête</param>
         /// <returns>Objet métier personne créé à partir du curseur</returns>
-        private static Personne RecupererPersonneSurCurseur(SqlDataReader Lecteur)
+        private static Personne RecupererPersonneSurCurseur(SqlDataReader reader)
         {
             return new Personne()
             {
-                Uid = Lecteur.GetString(Lecteur.GetOrdinal("uid")),
-                Nom = Lecteur.GetString(Lecteur.GetOrdinal("nom")),
-                Prenom = Lecteur.GetString(Lecteur.GetOrdinal("prenom")),
-                Description = Lecteur.GetString(Lecteur.GetOrdinal("description"))
+                Uid = reader.GetString(reader.GetOrdinal("uid")),
+                Nom = reader.GetString(reader.GetOrdinal("nom")),
+                Prenom = reader.GetString(reader.GetOrdinal("prenom")),
+                Description = reader.GetString(reader.GetOrdinal("description"))
             };
         }
 
