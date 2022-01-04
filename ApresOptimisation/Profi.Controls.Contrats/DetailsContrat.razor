@@ -1,0 +1,34 @@
+﻿@page "/contrat/{uid}"
+
+@if (contrat is null)
+{
+    <p>Chargement...</p>
+}
+else
+{
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-warning" onclick="window.history.back()">Retour à la liste</button>
+        </div>
+    </div>
+    <EditForm Model="@contrat">
+        <div class="mb-3">
+            <label for="date_contrat" class="form-label">Date</label>
+            <InputDate class="form-control" id="date_contrat" @bind-Value="contrat.Debut" readonly="true" />
+        </div>
+        <div class="mb-3">
+            <label for="montant_contrat" class="form-label">Montant</label>
+            <InputNumber class="form-control" id="montant_contrat" @bind-Value="contrat.Montant" readonly="true" />
+        </div>
+        <div class="mb-3">
+            <label for="code_reduc_contrat" class="form-label">Code de réduction</label>
+            <InputText class="form-control" id="code_reduc_contrat" @bind-Value="contrat.Reduction" readonly="true" />
+        </div>
+    </EditForm>
+    <div class="row">
+        <div class="col">
+            <a class="btn btn-primary" href="@(new Uri(new Uri(Configuration["Api:BaseUrl"], UriKind.Absolute), $"api/contrats/download/{Uid}").ToString())">Éditer le contrat</a>
+        </div>
+
+    </div>
+}
