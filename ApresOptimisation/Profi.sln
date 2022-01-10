@@ -15,7 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Profi.API", "Profi.API\Prof
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Profi.Dtos", "Profi.Dtos\Profi.Dtos.csproj", "{1CE7692A-6FBC-4C95-81D4-98BC4DF68F75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profi.Infra", "Profi.Infra\Profi.Infra.csproj", "{945F26CB-34BC-4409-B395-2904288A1A24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Profi.Infra", "Profi.Infra\Profi.Infra.csproj", "{945F26CB-34BC-4409-B395-2904288A1A24}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Profi.Data", "Profi.Data\Profi.Data.csproj", "{6624AC95-1CFA-4123-8418-03EBC25C3F01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profi.Handlers", "Profi.Handlers\Profi.Handlers.csproj", "{42225414-F86D-4F19-B8F1-840D84803110}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +55,14 @@ Global
 		{945F26CB-34BC-4409-B395-2904288A1A24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{945F26CB-34BC-4409-B395-2904288A1A24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{945F26CB-34BC-4409-B395-2904288A1A24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6624AC95-1CFA-4123-8418-03EBC25C3F01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6624AC95-1CFA-4123-8418-03EBC25C3F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6624AC95-1CFA-4123-8418-03EBC25C3F01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6624AC95-1CFA-4123-8418-03EBC25C3F01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42225414-F86D-4F19-B8F1-840D84803110}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42225414-F86D-4F19-B8F1-840D84803110}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42225414-F86D-4F19-B8F1-840D84803110}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42225414-F86D-4F19-B8F1-840D84803110}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

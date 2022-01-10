@@ -12,17 +12,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="ContratType.docx">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
-
-	<ItemGroup>
 	  <Folder Include="Messages\" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Profi.Infra\Profi.Infra.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="ContratType.docx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

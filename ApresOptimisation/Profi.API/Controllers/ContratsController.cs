@@ -8,32 +8,35 @@ namespace Profi.API.Controllers
     [ApiController]
     public class ContratsController : ControllerBase
     {
+        private readonly Bus bus;
         private readonly IConfiguration configuration;
 
         public ContratsController(
+            Bus bus,
             IConfiguration configuration)
         {
+            this.bus = bus;
             this.configuration = configuration;
         }
 
         [HttpGet("{personneId}")]
         public async Task<IActionResult> Get(string personneId)
         {
-            var result = await Bus.Current.DispatchMessage(new RecupererListeParPersonne(personneId));
+            var result = await bus.DispatchMessage(new RecupererListeParPersonne(personneId));
             return Ok(result);
         }
 
         [HttpGet("byId/{contratId}")]
         public async Task<IActionResult> GetContrat(string contratId)
         {
-            var result = await Bus.Current.DispatchMessage(new RecupererContrat(contratId));
+            var result = await bus.DispatchMessage(new RecupererContrat(contratId));
             return Ok(result);
         }
 
         [HttpGet("download/{contratId}")]
         public async Task<IActionResult> GetFichierContrat(string contratId)
         {
-            var result = await Bus.Current.DispatchMessage(new FusionnerContrat(contratId));
+            var result = await bus.DispatchMessage(new FusionnerContrat(contratId));
             if (result is string filePath && System.IO.File.Exists(filePath))
             {
                 return File(await System.IO.File.ReadAllBytesAsync(filePath), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "contrat.docx");
@@ -52,7 +55,7 @@ namespace Profi.API.Controllers
         [HttpGet("complexe")]
         public async Task<IActionResult> Complexe()
         {
-            var result = await Bus.Current.DispatchMessage(new ExecuterRequeteComplexe());
+            var result = await bus.DispatchMessage(new ExecuterRequeteComplexe());
             return Ok(result);
         }
     }

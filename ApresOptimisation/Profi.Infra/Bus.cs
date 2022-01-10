@@ -1,36 +1,51 @@
-﻿using System.Reflection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace Profi.Infra
 {
     public class Bus
     {
-        private static Bus? _bus;
-        public static Bus Current
-        {
-            get
-            {
-                if (_bus == null)
-                {
-                    _bus = new Bus();
-                }
-                return _bus;
-            }
-        }
+        private static List<Type> handlers = new();
+        private readonly IServiceProvider serviceProvider;
 
-        private static List<object> handlers = new();
-
-        private Bus()
+        public Bus(IServiceProvider serviceProvider)
         {
             ChargerHandlers();
+            this.serviceProvider = serviceProvider;
         }
 
         public async Task<object?> DispatchMessage<TMessage>(TMessage message) where TMessage : class, IMessage
         {
-            var handler = handlers.FirstOrDefault(h => h.GetType().GetInterfaces().Any(i => i.GetGenericArguments().Contains(message.GetType())));
-            if (handler is not null)
+            var handlerType = handlers.Find(h => h.GetInterfaces().Any(i => i.GetGenericArguments().Contains(message.GetType())));
+            if (handlerType is not null)
             {
-                return await ((handler as IHandler<TMessage>)?.HandleMessage(message) ?? Task.FromResult<object?>(null));
+                var handlerInstance = GetHandlerFromType<TMessage>(handlerType);
+                if (handlerInstance is not null)
+                {
+                    return await handlerInstance.HandleMessage(message);
+                }
             }
+            return null;
+        }
+
+        private IHandler<TMessage>? GetHandlerFromType<TMessage>(Type t) where TMessage : class, IMessage
+        {
+            var ctor = t.GetConstructors(BindingFlags.Instance | BindingFlags.Public).FirstOrDefault();
+            if (ctor is not null)
+            {
+                List<object> ctorParams = new();
+                using var scope = serviceProvider.CreateScope();
+                foreach (var p in ctor.GetParameters())
+                {
+                    var ctorParamInstance = scope.ServiceProvider.GetService(p.ParameterType);
+                    if (ctorParamInstance is not null)
+                    {
+                        ctorParams.Add(ctorParamInstance);
+                    }
+                }
+                return ctor.Invoke(ctorParams.ToArray()) as IHandler<TMessage>;
+            }
+
             return null;
         }
 
@@ -51,11 +66,7 @@ namespace Profi.Infra
                             {
                                 if (t.GetInterfaces().Any(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IHandler<>)))
                                 {
-                                    var handler = Activator.CreateInstance(t);
-                                    if (handler is not null)
-                                    {
-                                        handlers.Add(handler);
-                                    }
+                                    handlers.Add(t);
                                 }
                             }
                             catch
