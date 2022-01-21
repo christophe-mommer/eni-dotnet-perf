@@ -37,9 +37,9 @@ namespace Profi.API.Controllers
         public async Task<IActionResult> GetFichierContrat(string contratId)
         {
             var result = await bus.DispatchMessage(new FusionnerContrat(contratId));
-            if (result is string filePath && System.IO.File.Exists(filePath))
+            if (result is byte[] file)
             {
-                return File(await System.IO.File.ReadAllBytesAsync(filePath), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "contrat.docx");
+                return File(file, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "contrat.docx");
             }
             return NotFound();
         }

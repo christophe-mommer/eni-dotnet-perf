@@ -1,80 +1,93 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
+﻿using Microsoft.Extensions.Caching.Memory;
 using Profi.Business.Models;
 using Profi.Data.Abstractions;
 using Profi.Infra;
 using Profi.Infra.Messages.Contrats;
+using System.IO.Compression;
 using System.Xml;
 
 namespace Profi.Handlers.Contrats
 {
     public class FusionnerContratHandler : IHandler<FusionnerContrat>
     {
+        private readonly IMemoryCache cache;
         private readonly IContratRepository repo;
 
         public FusionnerContratHandler(
+            IMemoryCache cache,
             IContratRepository repo)
         {
+            this.cache = cache;
             this.repo = repo;
         }
 
-        public Task<object?> HandleMessage(FusionnerContrat message)
+        public async Task<object?> HandleMessage(FusionnerContrat message)
         {
             var contrat = repo.Recuperer(message.Id);
             if (contrat is null)
             {
                 return Task.FromResult<object?>(null);
             }
-            var dir = ExtraireContratTypeDansRepertoire();
-            object result = FusionnerDocumentContrat(contrat, dir);
-            return Task.FromResult(result);
-        }
-
-
-        /// <summary>
-        /// Décompression du contrat type dans un répertoire temporaire
-        /// </summary>
-        /// <returns>L'adresse du répertoire créé</returns>
-        private static string ExtraireContratTypeDansRepertoire()
-        {
-            string tempRep = Path.GetTempFileName();
-            File.Delete(tempRep);
-            Directory.CreateDirectory(tempRep);
-            var fileBytes = File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "ContratType.docx"));
-            using (Stream Flux = new MemoryStream(fileBytes))
+            using var flux = new MemoryStream();
+            flux.Write(await cache.GetOrCreateAsync("contrat_Type", async c =>
             {
-                new FastZip().ExtractZip(Flux, tempRep, FastZip.Overwrite.Always, null, ".*", ".*", false, true);
+                var data = await File.ReadAllBytesAsync(Path.Combine(AppContext.BaseDirectory, "ContratType.docx"));
+                c.SetValue(data);
+                return data;
+            }));
+            flux.Position = 0;
+            using (var zip = new ZipArchive(flux, ZipArchiveMode.Update, true))
+            {
+                var doc = zip.Entries.FirstOrDefault(z => z.FullName == "word/document.xml");
+                using var s = new MemoryStream();
+                using (var ds = doc.Open())
+                {
+                    await ds.CopyToAsync(s);
+                    s.Position = 0;
+                    FusionnerDocumentContrat(contrat, s);
+                }
+
+                doc.Delete();
+                var e = zip.CreateEntry("word/document.xml", CompressionLevel.Optimal);
+                using (var newEntryStream = e.Open())
+                {
+                    s.Position = 0;
+                    await s.CopyToAsync(newEntryStream);
+                    newEntryStream.Position = 0;
+                }
             }
 
-            return tempRep;
+            flux.Position = 0;
+            return flux.ToArray();
         }
 
         /// <summary>
         /// Fusion du document contractuel avec les valeurs de l'objet métier contrat courant, la fusion consistant à remplacer
         /// les entrées paramétrées dans le document type par les vraies valeurs issues de la base de données pour un contrat donné
         /// </summary>
-        /// <param name="Resultat">Le contrat courant</param>
-        /// <param name="RepTemp">Le répertoire contenant les fichiers décompressés du fichier Word au format DOCX</param>
+        /// <param name="contrat">Le contrat courant</param>
+        /// <param name="sourceStream">Stream source contenant le fichier contrat type</param>
         /// <returns>Le fichier recompressé de retour avec les informations fusionnées</returns>
-        private static string FusionnerDocumentContrat(Contrat Resultat, string RepTemp)
+        private static void FusionnerDocumentContrat(Contrat contrat, Stream sourceStream)
         {
-            string docFile = Path.Combine(RepTemp, @"word\document.xml");
+            using var readStream = new MemoryStream();
+            sourceStream.CopyTo(readStream);
+            readStream.Position = 0;
+            sourceStream.Position = 0;
+
             XmlDocument xml = new XmlDocument();
-            xml.Load(docFile);
+            xml.Load(readStream);
 
             XmlNamespaceManager @namespace = new XmlNamespaceManager(xml.NameTable);
             @namespace.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
             foreach (XmlNode node in xml.SelectNodes("//w:t[contains(., 'FUSION_')]", @namespace))
             {
-                node.InnerText = node.InnerText.Replace("FUSION_uid", Resultat.Uid);
-                node.InnerText = node.InnerText.Replace("FUSION_montant", Resultat.Montant.ToString("C"));
-                node.InnerText = node.InnerText.Replace("FUSION_debut", Resultat.Debut.ToLongDateString());
+                node.InnerText = node.InnerText.Replace("FUSION_uid", contrat.Uid);
+                node.InnerText = node.InnerText.Replace("FUSION_montant", contrat.Montant.ToString("C"));
+                node.InnerText = node.InnerText.Replace("FUSION_debut", contrat.Debut.ToLongDateString());
             }
 
-            xml.Save(docFile);
-
-            string fichierFusion = Path.GetTempFileName();
-            new FastZip().CreateZip(fichierFusion, RepTemp, true, ".*");
-            return fichierFusion;
+            xml.Save(sourceStream);
         }
 
     }
