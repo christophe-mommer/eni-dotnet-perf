@@ -36,23 +36,7 @@ namespace ZipLibBench
             using (var zip = new ZipArchive(flux, ZipArchiveMode.Update, true))
             {
                 var doc = zip.Entries.FirstOrDefault(z => z.FullName == "word/document.xml");
-                using var s = new MemoryStream();
-                using (var ds = doc.Open())
-                {
-                    await ds.CopyToAsync(s);
-                    s.Position = 0;
-                    FusionnerDocumentContrat(s);
-                }
-
-                doc.Delete();
-                var e = zip.CreateEntry("word/document.xml", CompressionLevel.Optimal);
-                using (var newEntryStream = e.Open())
-                {
-                    s.Position = 0;
-                    await s.CopyToAsync(newEntryStream);
-                    newEntryStream.Position = 0;
-                }
-
+                FusionnerDocumentContrat(doc.Open());
             }
         }
 
@@ -70,13 +54,9 @@ namespace ZipLibBench
 
         private static void FusionnerDocumentContrat(Stream sourceStream)
         {
-            using var readStream = new MemoryStream();
-            sourceStream.CopyTo(readStream);
-            readStream.Position = 0;
             sourceStream.Position = 0;
-
             XmlDocument xml = new XmlDocument();
-            xml.Load(readStream);
+            xml.Load(sourceStream);
 
             XmlNamespaceManager @namespace = new XmlNamespaceManager(xml.NameTable);
             @namespace.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
@@ -87,8 +67,8 @@ namespace ZipLibBench
                 node.InnerText = node.InnerText.Replace("FUSION_debut", DateTime.Today.ToLongDateString());
             }
 
+            sourceStream.Position = 0;
             xml.Save(sourceStream);
         }
-
     }
 }
