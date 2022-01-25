@@ -39,22 +39,7 @@ namespace Profi.Handlers.Contrats
             using (var zip = new ZipArchive(flux, ZipArchiveMode.Update, true))
             {
                 var doc = zip.Entries.FirstOrDefault(z => z.FullName == "word/document.xml");
-                using var s = new MemoryStream();
-                using (var ds = doc.Open())
-                {
-                    await ds.CopyToAsync(s);
-                    s.Position = 0;
-                    FusionnerDocumentContrat(contrat, s);
-                }
-
-                doc.Delete();
-                var e = zip.CreateEntry("word/document.xml", CompressionLevel.Optimal);
-                using (var newEntryStream = e.Open())
-                {
-                    s.Position = 0;
-                    await s.CopyToAsync(newEntryStream);
-                    newEntryStream.Position = 0;
-                }
+                FusionnerDocumentContrat(contrat, doc.Open());
             }
 
             flux.Position = 0;
