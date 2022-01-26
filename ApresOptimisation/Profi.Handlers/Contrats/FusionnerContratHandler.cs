@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IO;
 using Profi.Business.Models;
 using Profi.Data.Abstractions;
 using Profi.Infra;
@@ -12,6 +13,7 @@ namespace Profi.Handlers.Contrats
     {
         private readonly IMemoryCache cache;
         private readonly IContratRepository repo;
+        private static readonly RecyclableMemoryStreamManager manager = new();
 
         public FusionnerContratHandler(
             IMemoryCache cache,
@@ -28,7 +30,8 @@ namespace Profi.Handlers.Contrats
             {
                 return Task.FromResult<object?>(null);
             }
-            using var flux = new MemoryStream();
+
+            using var flux = manager.GetStream();
             flux.Write(await cache.GetOrCreateAsync("contrat_Type", async c =>
             {
                 var data = await File.ReadAllBytesAsync(Path.Combine(AppContext.BaseDirectory, "ContratType.docx"));
@@ -42,8 +45,7 @@ namespace Profi.Handlers.Contrats
                 FusionnerDocumentContrat(contrat, doc.Open());
             }
 
-            flux.Position = 0;
-            return flux.ToArray();
+            return flux.GetBuffer()[..(int)flux.Length];
         }
 
         /// <summary>
