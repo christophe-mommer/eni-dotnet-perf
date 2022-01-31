@@ -9,6 +9,8 @@
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
     <link href="Profi.Client.styles.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -25,31 +27,32 @@
             window.history.back();
         }
         function createCookie(name, value, days) {
-                let expires;
-                if (days) {
-                    let date = new Date();
-                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                    expires = "; expires=" + date.toGMTString();
-                }
-                else {
-                    expires = "";
-                }
-                document.cookie = name + "=" + value + expires + "; path=/";
+            let expires;
+            if (days) {
+                let date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toGMTString();
             }
-            function readCookie(name) {
-                if(document.cookie)
-                {
-                    const cookieParts = document.cookie.split(';');
-                    if(cookieParts){
-                        const namedCookie = cookieParts.find(c => c.trim().startsWith(name));
-                        if(namedCookie){
-                            return namedCookie.split('=')[1];
-                        }
+            else {
+                expires = "";
+            }
+            document.cookie = name + "=" + value + expires + "; path=/";
+        }
+        function readCookie(name) {
+            if(document.cookie)
+            {
+                const cookieParts = document.cookie.split(';');
+                if(cookieParts){
+                    const namedCookie = cookieParts.find(c => c.trim().startsWith(name));
+                    if(namedCookie){
+                        return namedCookie.split('=')[1];
                     }
                 }
-                return '';
             }
+            return '';
+        }
     </script>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 </body>
 
 </html>

@@ -1,8 +1,12 @@
 ﻿@page "/personnes"
 
+@using MudBlazor
+
 @if (personnes == null)
 {
-    <p>Chargement des personnes ...</p>
+    <div class="d-flex justify-content-center align-items-center h-100">
+        <MudProgressCircular Color="Color.Secondary" Style="height:180px;width:180px;" Indeterminate="true" />
+    </div>
 }
 else
 {
@@ -16,7 +20,7 @@ else
                         <td>@personne.ToString()</td>
                         <td>
                             <button class="btn btn-primary"
-                                @onclick="() => AfficherDetails(personne)">
+                        @onclick="() => AfficherDetails(personne)">
                                 Détails
                             </button>
                         </td>
