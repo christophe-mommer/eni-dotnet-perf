@@ -20,7 +20,6 @@ namespace Profi.Controls.Personnes
             var list = JsonSerializer.Deserialize<List<Personne>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             if (list is not null)
             {
-                await Task.Delay(5000);
                 personnes = list.ConvertAll(p => new PersonneListItemViewModel(p));
             }
         }
