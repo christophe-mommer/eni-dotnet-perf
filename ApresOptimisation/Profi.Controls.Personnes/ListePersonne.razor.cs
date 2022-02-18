@@ -1,3 +1,4 @@
+using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
 using Profi.Business.Models;
@@ -10,6 +11,7 @@ namespace Profi.Controls.Personnes
     {
         [Inject] private IConfiguration Configuration { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
+        [Inject] private ISessionStorageService Session { get; set; } = default!;
 
         private List<PersonneListItemViewModel>? personnes = null;
 
@@ -20,6 +22,7 @@ namespace Profi.Controls.Personnes
             var list = JsonSerializer.Deserialize<List<Personne>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             if (list is not null)
             {
+                await Session.SetItemAsync("personnes", list);
                 personnes = list.ConvertAll(p => new PersonneListItemViewModel(p));
             }
         }
