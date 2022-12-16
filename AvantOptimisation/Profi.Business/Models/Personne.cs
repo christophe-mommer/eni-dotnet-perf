@@ -59,9 +59,10 @@ namespace Profi.Business.Models
             // Si on a trouvé la personne, on rajoute ses contrats
             if (resultat != null)
             {
-                command = new SqlCommand("SELECT uid FROM CONTRAT WHERE titulaire=@uidpersonne", conn);
+                SqlConnection conn2 = new SqlConnection(Consts.ConnectionString);
+                command = new SqlCommand("SELECT uid FROM CONTRAT WHERE titulaire=@uidpersonne", conn2);
                 command.Parameters.Add(new SqlParameter("uidpersonne", UIDPersonne));
-                conn.Open();
+                conn2.Open();
                 SqlDataReader reader2 = command.ExecuteReader(CommandBehavior.CloseConnection);
                 while (reader2.Read())
                 {
